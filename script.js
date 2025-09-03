@@ -686,6 +686,183 @@ closeBtn.addEventListener('click', () => {
 });
 
 
+// Router: handle sidebar navigation
+document.querySelectorAll('.menu a[data-route]').forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+
+    // 1. Remove active class from all links
+    document.querySelectorAll('.menu a').forEach(a => a.classList.remove('active'));
+
+    // 2. Add active class to clicked link
+    link.classList.add('active');
+
+    // 3. Hide all pages
+    document.querySelectorAll('main .page').forEach(page => page.hidden = true);
+
+    // 4. Show the target page
+    const targetId = link.getAttribute('data-route');
+    const targetPage = document.getElementById(targetId);
+    if (targetPage) targetPage.hidden = false;
+  });
+});
+
+
+// --- Auto-generate Chart Data from Orders ---
+function getOrdersData() {
+  const rows = document.querySelectorAll('#orders tbody tr');
+  const products = {};
+  const sales = [];
+
+  rows.forEach((row, index) => {
+    const cells = row.querySelectorAll('td');
+    const product = cells[1].innerText;
+    const qtyText = cells[2].innerText.replace(/[^0-9.]/g, ''); // strip kg
+    const qty = parseFloat(qtyText) || 0;
+    const totalText = cells[3].innerText.replace(/[^0-9.]/g, '');
+    const total = parseFloat(totalText) || 0;
+
+    // Sum quantities by product
+    products[product] = (products[product] || 0) + qty;
+
+    // Collect totals in order sequence
+    sales.push({ order: index + 1, total });
+  });
+
+  return { products, sales };
+}
+
+// --- Build Charts ---
+function renderCharts() {
+  const { products, sales } = getOrdersData();
+
+  // ✅ Production Report (Bar chart: product vs qty)
+  const prodCanvas = document.getElementById('productionChart');
+  if (prodCanvas) {
+    new Chart(prodCanvas, {
+      type: 'bar',
+      data: {
+        labels: Object.keys(products),
+        datasets: [{
+          label: 'Harvest (kg)',
+          data: Object.values(products),
+          backgroundColor: '#3ecf8e'
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: { y: { beginAtZero: true } }
+      }
+    });
+  }
+
+  // ✅ Sales Overview (Line chart: order vs total)
+  const salesCanvas = document.getElementById('salesChart');
+  if (salesCanvas) {
+    new Chart(salesCanvas, {
+      type: 'line',
+      data: {
+        labels: sales.map(s => "Order " + s.order),
+        datasets: [{
+          label: 'Sales ($)',
+          data: sales.map(s => s.total),
+          borderColor: '#0b3d2e',
+          backgroundColor: 'rgba(11,61,46,0.2)',
+          fill: true,
+          tension: 0.3
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { position: 'top' } },
+        scales: { y: { beginAtZero: true } }
+      }
+    });
+  }
+}
+
+// Run charts after DOM loads
+document.addEventListener('DOMContentLoaded', renderCharts);
+
+
+// --- Buyer Cart Logic ---
+let cart = [];
+const cartBody = document.getElementById("cartBody");
+const checkoutBtn = document.getElementById("checkoutBtn");
+const orderHistory = document.getElementById("orderHistory");
+
+function renderCart() {
+  if (cart.length === 0) {
+    cartBody.innerHTML = `<tr><td colspan="5" class="empty">Your cart is empty</td></tr>`;
+    return;
+  }
+
+  cartBody.innerHTML = "";
+  cart.forEach((item, index) => {
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${item.product}</td>
+      <td>${item.qty}</td>
+      <td>$${item.price}</td>
+      <td>$${item.qty * item.price}</td>
+      <td><button class="btn small danger remove-item" data-index="${index}">Remove</button></td>
+    `;
+    cartBody.appendChild(row);
+  });
+
+  // Attach remove event
+  document.querySelectorAll(".remove-item").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      const idx = e.target.getAttribute("data-index");
+      cart.splice(idx, 1);
+      renderCart();
+    });
+  });
+}
+
+// Add to Cart
+document.querySelectorAll(".add-to-cart").forEach(button => {
+  button.addEventListener("click", () => {
+    const product = button.dataset.product;
+    const price = parseFloat(button.dataset.price);
+
+    // Check if already in cart
+    const existing = cart.find(item => item.product === product);
+    if (existing) {
+      existing.qty += 1;
+    } else {
+      cart.push({ product, price, qty: 1 });
+    }
+    renderCart();
+  });
+});
+
+// Checkout
+checkoutBtn.addEventListener("click", () => {
+  if (cart.length === 0) {
+    alert("Your cart is empty!");
+    return;
+  }
+
+  cart.forEach((item, i) => {
+    const orderId = Math.floor(Math.random() * 1000) + 500; // fake ID
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>#${orderId}</td>
+      <td>${item.product}</td>
+      <td>${item.qty}</td>
+      <td>Pending</td>
+    `;
+    orderHistory.appendChild(row);
+  });
+
+  cart = [];
+  renderCart();
+  alert("✅ Checkout successful! Orders added to history.");
+});
+
+
 
 
 

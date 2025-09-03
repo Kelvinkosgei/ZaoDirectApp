@@ -25,58 +25,256 @@
     <button id="closeDrawer" class="close-btn">✖</button>
     <nav class="menu">
       <a data-route="home" class="active">🏠 Home</a>
-      <!-- <a data-route="farmer" class="only-farmer">👨‍🌾 Farmer Dashboard</a> -->
-      <main id="mainContent">
-  <section id="dashboard" class="page active">
-    <h1>👨‍🌾 Farmer Dashboard</h1>
-
-    <!-- Sales Overview -->
-    <div class="card">
-      <h2>📊 Sales Overview</h2>
-      <canvas id="salesChart" height="120"></canvas>
-    </div>
-
-    <!-- Current Listings -->
-    <div class="card">
-      <h2>🌽 Current Listings</h2>
-      <table class="listing-table">
-        <thead>
-          <tr>
-            <th>Product</th>
-            <th>Stock (kg)</th>
-            <th>Price ($/kg)</th>
-          </tr>
-        </thead>
-        <tbody id="listingTableBody">
-          <!-- Populated by JS -->
-        </tbody>
-      </table>
-    </div>
-
-    <!-- Quick Actions -->
-    <div class="card actions">
-      <h2>⚡ Quick Actions</h2>
-      <button onclick="addProduct()">➕ Add New Product</button>
-      <button onclick="manageInventory()">📦 Manage Inventory</button>
-    </div>
-
-    <!-- Notifications -->
-    <div class="card">
-      <h2>🔔 Notifications</h2>
-      <ul id="notifications">
-        <li>⚠️ Tomatoes stock is below 10kg</li>
-        <li>✅ Last order delivered successfully</li>
-      </ul>
-    </div>
-  </section>
-</main>
-
+      <a data-route="farmer" class="only-farmer">👨‍🌾 Farmer Dashboard</a>
       <a data-route="admin" class="only-admin">🛡️ Admin Panel</a>
       <a data-route="orders" class="authed-only">📦 My Orders</a>
       <a data-route="messages" class="authed-only">💬 Messages</a>
       <a data-route="profile" class="authed-only">🙍 Profile</a>
     </nav>
   </aside>
+
+  <main id="mainContent">
+    <section id="farmer" class="page">
+  <h2>👨‍🌾 Farmer Dashboard</h2>
+
+  <!-- Quick Stats -->
+  <div class="grid cards">
+    <div class="card">
+      <h3>Total Harvest</h3>
+      <p class="price">1,250 kg</p>
+      <small>Updated this month</small>
+    </div>
+    <div class="card">
+      <h3>Pending Orders</h3>
+      <p class="price">15</p>
+      <small>Waiting for buyers</small>
+    </div>
+    <div class="card">
+      <h3>Total Revenue</h3>
+      <p class="price">$4,300</p>
+      <small>From 120 sales</small>
+    </div>
+  </div>
+
+  <!-- Charts -->
+  <div class="card">
+    <h3>📊 Production Report</h3>
+    <canvas id="productionChart"></canvas>
+  </div>
+
+  <div class="card">
+    <h3>💵 Sales Overview</h3>
+    <canvas id="salesChart"></canvas>
+  </div>
+
+  <!-- Recent Activity -->
+  <div class="card">
+    <h3>📝 Recent Activity</h3>
+    <ul>
+      <li>✅ Harvested 200kg Tomatoes (2 days ago)</li>
+      <li>📦 Delivered 50kg Maize to Buyer A (1 week ago)</li>
+      <li>💰 Received $500 Payment (2 weeks ago)</li>
+    </ul>
+  </div>
+</section>
+
+<section id="orders" class="page" hidden>
+  <h2>📦 My Orders</h2>
+
+  <!-- Orders Table -->
+  <div class="card">
+    <table class="listing-table">
+      <thead>
+        <tr>
+          <th>Order ID</th>
+          <th>Product</th>
+          <th>Quantity</th>
+          <th>Total ($)</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>#1001</td>
+          <td>Tomatoes</td>
+          <td>5 kg</td>
+          <td>$12.50</td>
+          <td><span class="badge">Delivered</span></td>
+        </tr>
+        <tr>
+          <td>#1002</td>
+          <td>Potatoes</td>
+          <td>10 kg</td>
+          <td>$20.00</td>
+          <td><span class="badge warn">Pending</span></td>
+        </tr>
+        <tr>
+          <td>#1003</td>
+          <td>Onions</td>
+          <td>8 kg</td>
+          <td>$16.00</td>
+          <td><span class="badge danger">Cancelled</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Actions -->
+  <div class="actions">
+    <button>➕ New Order</button>
+    <button>🔄 Refresh</button>
+  </div>
+</section>
+
+<section id="messages" class="page" hidden>
+  <h2>💬 Messages</h2>
+
+  <!-- Message List -->
+  <div class="card">
+    <ul>
+      <li><strong>Buyer A:</strong> Can you deliver 20kg of potatoes by next week?</li>
+      <li><strong>Admin:</strong> Reminder: Update your farm profile.</li>
+      <li><strong>Buyer B:</strong> Interested in your maize harvest. Please confirm availability.</li>
+    </ul>
+  </div>
+
+  <!-- Send Message -->
+  <div class="card">
+    <h3>✍️ Send a New Message</h3>
+    <form>
+      <div class="field">
+        <label for="recipient">To:</label>
+        <input id="recipient" type="text" class="input" placeholder="Recipient name">
+      </div>
+      <div class="field">
+        <label for="message">Message:</label>
+        <textarea id="message" class="input" placeholder="Write your message..."></textarea>
+      </div>
+      <button type="submit" class="btn">Send</button>
+    </form>
+  </div>
+</section>
+
+<section id="profile" class="page" hidden>
+  <h2>🙍 Profile</h2>
+
+  <div class="card">
+    <form>
+      <div class="field">
+        <label for="name">Full Name</label>
+        <input id="name" type="text" class="input" value="John Doe">
+      </div>
+
+      <div class="field">
+        <label for="farm">Farm Name</label>
+        <input id="farm" type="text" class="input" value="Green Valley Farm">
+      </div>
+
+      <div class="field">
+        <label for="contact">Contact Number</label>
+        <input id="contact" type="text" class="input" value="+1234567890">
+      </div>
+
+      <div class="field">
+        <label for="location">Location</label>
+        <input id="location" type="text" class="input" value="Nairobi, Kenya">
+      </div>
+
+      <div class="field">
+        <label for="bio">About Me</label>
+        <textarea id="bio" class="input">Passionate farmer growing organic produce.</textarea>
+      </div>
+
+      <button type="submit" class="btn">💾 Save Changes</button>
+    </form>
+  </div>
+</section>
+
+  </main>
+
+  <main id="mainContent">
+    <section id="buyer" class="page" hidden>
+  <h2>🛒 Buyer Dashboard</h2>
+
+  <!-- Product Listings -->
+  <div class="card">
+    <h3>Available Products</h3>
+    <div class="product-grid">
+      <div class="product-card">
+        <img src="https://via.placeholder.com/150" alt="Tomatoes">
+        <h4>Tomatoes</h4>
+        <p>$200 / 100kg</p>
+        <button class="btn small add-to-cart" 
+                data-product="Tomatoes" 
+                data-price="200">Add to Cart</button>
+      </div>
+      <div class="product-card">
+        <img src="https://via.placeholder.com/150" alt="Potatoes">
+        <h4>Potatoes</h4>
+        <p>$150 / 200kg</p>
+        <button class="btn small add-to-cart" 
+                data-product="Potatoes" 
+                data-price="150">Add to Cart</button>
+      </div>
+      <div class="product-card">
+        <img src="https://via.placeholder.com/150" alt="Onions">
+        <h4>Onions</h4>
+        <p>$120 / 150kg</p>
+        <button class="btn small add-to-cart" 
+                data-product="Onions" 
+                data-price="120">Add to Cart</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cart Section -->
+  <div class="card">
+    <h3>🛍️ My Cart</h3>
+    <table class="listing-table">
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Qty</th>
+          <th>Price</th>
+          <th>Total</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="cartBody">
+        <tr><td colspan="5" class="empty">Your cart is empty</td></tr>
+      </tbody>
+    </table>
+    <div class="actions">
+      <button class="btn small" id="checkoutBtn">Checkout</button>
+    </div>
+  </div>
+
+  <!-- Order History -->
+  <div class="card">
+    <h3>📦 Order History</h3>
+    <table class="listing-table">
+      <thead>
+        <tr>
+          <th>Order #</th>
+          <th>Product</th>
+          <th>Qty</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="orderHistory">
+        <tr>
+          <td>#501</td>
+          <td>Tomatoes</td>
+          <td>50kg</td>
+          <td>Delivered</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+  </main>
+  
 
   <!-- Main Content -->
   <main id="app" class="container">
