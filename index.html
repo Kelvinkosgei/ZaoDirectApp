@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>AgroMarket • Farmers ↔ Buyers</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+   <link rel="icon" type="image/x-icon" href="/images/test-tube.png">
+  <link rel="manifest" href="data:application/manifest+json,{&quot;name&quot;:&quot;AgroMarket&quot;,&quot;short_name&quot;:&quot;AgroMarket&quot;,&quot;display&quot;:&quot;standalone&quot;,&quot;background_color&quot;:&quot;#0b3d2e&quot;,&quot;theme_color&quot;:&quot;#0b3d2e&quot;}">
+</head>
+<body>
+  <header class="topbar">
+    <button id="navToggle" class="icon-btn" aria-label="Menu">☰</button>
+    <h1 class="brand">AgroMarket</h1>
+    <div class="spacer"></div>
+    <button id="cartBtn" class="icon-btn authed-only only-buyer" aria-label="Cart" hidden>
+    🛒<span id="cartCount" class="badge" hidden>0</span>
+  </button>
+    <button id="notifyBell" class="icon-btn" aria-label="Notifications">🔔<span id="notifDot" hidden></span></button>
+    <button id="logoutBtn" class="btn small" hidden>Logout</button>
+  </header>
+
+  <aside id="drawer" class="drawer" aria-hidden="true">
+    <button id="closeDrawer" class="close-btn">✖</button>
+    <nav class="menu">
+      <a data-route="home" class="active">🏠 Home</a>
+      <!-- <a data-route="farmer" class="only-farmer">👨‍🌾 Farmer Dashboard</a> -->
+      <main id="mainContent">
+  <section id="dashboard" class="page active">
+    <h1>👨‍🌾 Farmer Dashboard</h1>
+
+    <!-- Sales Overview -->
+    <div class="card">
+      <h2>📊 Sales Overview</h2>
+      <canvas id="salesChart" height="120"></canvas>
+    </div>
+
+    <!-- Current Listings -->
+    <div class="card">
+      <h2>🌽 Current Listings</h2>
+      <table class="listing-table">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Stock (kg)</th>
+            <th>Price ($/kg)</th>
+          </tr>
+        </thead>
+        <tbody id="listingTableBody">
+          <!-- Populated by JS -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="card actions">
+      <h2>⚡ Quick Actions</h2>
+      <button onclick="addProduct()">➕ Add New Product</button>
+      <button onclick="manageInventory()">📦 Manage Inventory</button>
+    </div>
+
+    <!-- Notifications -->
+    <div class="card">
+      <h2>🔔 Notifications</h2>
+      <ul id="notifications">
+        <li>⚠️ Tomatoes stock is below 10kg</li>
+        <li>✅ Last order delivered successfully</li>
+      </ul>
+    </div>
+  </section>
+</main>
+
+      <a data-route="admin" class="only-admin">🛡️ Admin Panel</a>
+      <a data-route="orders" class="authed-only">📦 My Orders</a>
+      <a data-route="messages" class="authed-only">💬 Messages</a>
+      <a data-route="profile" class="authed-only">🙍 Profile</a>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main id="app" class="container">
+    <!-- Hero / Welcome Notes -->
+    <section class="hero">
+      <h2>Welcome to AgroMarket 🌱</h2>
+      <p>Connecting farmers and buyers for fresh, fair, and sustainable agriculture.</p>
+      <ul class="welcome-notes">
+        <li>✔️ Direct farmer-to-buyer trade</li>
+        <li>✔️ Fresh & organic produce</li>
+        <li>✔️ Easy to use for all</li>
+        <li>✔️ Secure payments & tracking</li>
+        <li>✔️ Supporting local farmers</li>
+      </ul>
+    </section>
+
+    <!-- About Section -->
+    <section class="about">
+      <h3>About AgroMarket</h3>
+      <p>AgroMarket is a digital marketplace built to empower farmers and provide buyers with quality agricultural products. Whether you are a farmer looking to showcase your harvest or a buyer searching for fresh, reliable goods <br>
+        AgroMarket is here for you.</p>
+    </section>
+
+    <!-- Featured Products -->
+    <section class="products">
+      <h3>Featured Products</h3>
+      <div class="product-grid">
+        <div class="product-card">
+          <img src="images/Fresh-tomatoes.jpg" alt="Tomatoes">
+          <h4>Fresh Tomatoes</h4>
+          <p>$20 / kg</p>
+          <button class="btn buyBtn"
+        data-title="Fresh Tomatoes"
+        data-price="20"
+        data-img="images/Tomatoes.jpg">Buy</button>
+        </div>
+
+        <div class="product-card">
+          <img src="images/Corns.jpg" alt="Corn">
+          <h4>Organic Corn</h4>
+          <p>$15 / kg</p>
+         <button class="btn buyBtn"
+        data-title="Organic Corn"
+        data-price="15"
+        data-img="images/Corn.jpg">Buy</button>
+        </div>
+
+        <div class="product-card">
+          <img src="images/Potatoes.jpg" alt="Potatoes">
+          <h4>Potatoes</h4>
+          <p>$10 / kg</p>
+           <button class="btn buyBtn"
+        data-title="Potatoes"
+        data-price="10"
+        data-img="images/Potatoes.jpg">Buy</button>
+        </div>
+
+        <div class="product-card">
+          <img src="images/Mangoes.jpg" alt="Mangoes">
+          <h4>Sweet Mangoes</h4>
+          <p>$30 / dozen</p>
+           <button class="btn buyBtn"
+        data-title="Sweet Mangoes"
+        data-price="30"
+        data-img="images/Mangoes.jpg">Buy</button>
+        </div>
+
+        <div class="product-card">
+          <img src="images/Rice.jpg" alt="Rice">
+          <h4>Premium Rice</h4>
+          <p>$40 / bag</p>
+           <button class="btn buyBtn"
+        data-title="Premium Rice"
+        data-price="40"
+        data-img="images/Rice.jpg">Buy</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="cta">
+      <h2>Are you a farmer? 👩‍🌾</h2>
+      <p>Join AgroMarket today and start selling your fresh produce directly to buyers.</p>
+      <button class="join-btn">Register as Farmer</button>
+    </section>
+  </main>
+
+  <!-- Global modals -->
+  <dialog id="productModal" class="modal"></dialog>
+  <dialog id="chatModal" class="modal"></dialog>
+  <dialog id="notifModal" class="modal"></dialog>
+
+  <!-- Toasts -->
+  <div id="toasts" aria-live="polite" aria-atomic="true"></div>
+
+  <footer class="footer">
+    <p>&copy; 2025 AgroMarket. All rights reserved.</p>
+  </footer>
+
+  <dialog id="loginModal" class="modal">
+  <div class="content">
+    <h3>Login</h3>
+    <div class="field">
+      <label>Username</label>
+      <input id="loginName" type="text" class="input" placeholder="Enter your name">
+    </div>
+    <div class="field">
+      <label>Role</label>
+      <select id="loginRole" class="input">
+        <option value="farmer">Farmer 👨‍🌾</option>
+        <option value="buyer">Buyer 🛒</option>
+        <option value="admin">Admin 🛡️</option>
+      </select>
+    </div>
+    <div class="row" style="margin-top:1rem;">
+      <button id="loginSubmit" class="btn">Login</button>
+      <button onclick="document.getElementById('loginModal').close()" class="btn secondary">Cancel</button>
+    </div>
+  </div>
+</dialog>
+
+<script src="script.js"></script>
+
+
+  <!-- <script src="script.js"></script> -->
+  <!-- <script>
+    // Register SW (optional)
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js').catch(()=>{});
+    }
+  </script> -->
+</body>
+</html>
